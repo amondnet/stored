@@ -31,6 +31,12 @@ jobs:
       - name: Format
         run: dart format --set-exit-if-changed .
 
+      - name: dart-code-metrics
+        uses: dart-code-checker/dart-code-metrics-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          relative_path: package/${{ matrix.package }}
+
       #- name: Analyze
       #  run: dartanalyzer --fatal-infos --fatal-warnings lib test
 
