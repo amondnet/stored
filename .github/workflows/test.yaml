@@ -13,6 +13,9 @@ jobs:
         package: [ stored ]
 
         sdk: [ stable ]
+    defaults:
+      run:
+        working-directory: package/${{ matrix.package }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -22,20 +25,16 @@ jobs:
         with:
           sdk: ${{ matrix.sdk }}
       - name: get
-        working-directory: package/${{ matrix.package }}
         run: |
           dart pub get
 
       - name: Format
-        working-directory: package/${{ matrix.package }}
         run: dart format --set-exit-if-changed .
 
-      - name: Analyze
-        working-directory: package/${{ matrix.package }}
-        run: dartanalyzer --fatal-infos --fatal-warnings lib test
+      #- name: Analyze
+      #  run: dartanalyzer --fatal-infos --fatal-warnings lib test
 
       - name: Run tests
-        working-directory: package/${{ matrix.package }}
         run: |
           pub run test
           dart test --coverage=coverage
