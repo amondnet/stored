@@ -18,3 +18,5 @@ dev_dependencies:
   freezed: ^0.14.5
   build_runner: ^2.1.1
   coverage: ^1.0.3
+  test_cov:
+

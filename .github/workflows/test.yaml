@@ -36,7 +36,7 @@ jobs:
 
       - name: Run tests
         run: |
-          dart run gen_coverage
+          pub run test_cov
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v1
         with:
