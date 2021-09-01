@@ -30,6 +30,8 @@ class RefCountedResource<Key, T> {
         if (existing.refCount < 1) {
           _items.remove(key);
           _onRelease?.call(key, value);
+          print('removed');
+          print('items : ${_items.length}');
         }
       });
 

@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'exceptions.dart';
@@ -9,7 +10,7 @@ import 'exceptions.dart';
 /// so that if there is an observable single source of truth, application can keep observing it.
 
 @sealed
-abstract class StoreResponse<T> {
+abstract class StoreResponse<T> extends Equatable {
   final ResponseOrigin origin;
 
   StoreResponse(this.origin);
@@ -79,6 +80,9 @@ abstract class StoreResponse<T> {
       throw StateError('');
     }
   }
+
+  @override
+  List<Object?> get props => [origin];
 }
 
 class LoadingStoreResponse<T> extends StoreResponse<T> {
@@ -89,6 +93,9 @@ class DataStoreResponse<T> extends StoreResponse<T> {
   final T value;
 
   DataStoreResponse(this.value, ResponseOrigin origin) : super(origin);
+
+  @override
+  List<Object?> get props => [origin, value];
 }
 
 class NoNewDataStoreResponse<T> extends StoreResponse<T> {
