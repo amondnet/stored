@@ -7,10 +7,10 @@ part 'fetcher.freezed.dart';
 class FetcherResult<T> with _$FetcherResult {
   factory FetcherResult.data(T data) = DataFetcherResult;
 
-  @internal
-  factory FetcherResult.error() = _ErrorFetcherResult;
+  factory FetcherResult.error(dynamic error) = ErrorFetcherResult;
 }
 
+/*
 @freezed
 class ErrorFetcherResult with _$ErrorFetcherResult, _ErrorFetcherResult<Null> {
   factory ErrorFetcherResult.exception(Exception exception) =
@@ -19,6 +19,7 @@ class ErrorFetcherResult with _$ErrorFetcherResult, _ErrorFetcherResult<Null> {
   factory ErrorFetcherResult.message(String message) =
       MessageErrorFetcherResult;
 }
+ */
 
 typedef ResultStreamFactory<Key, Output> = Stream<FetcherResult<Output>>
     Function(Key k);

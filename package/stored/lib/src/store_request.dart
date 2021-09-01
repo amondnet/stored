@@ -16,11 +16,11 @@ class StoreRequest<Key> {
   StoreRequest._(this.key, this._skippedCaches, {this.refresh = false});
 
   @internal
-  bool shouldSkipCache(_CacheType cacheType) {
+  bool shouldSkipCache(CacheType cacheType) {
     return _skippedCaches & cacheType.flag != 0;
   }
 
-  static final allCaches = _CacheType.values
+  static final allCaches = CacheType.values
       .fold(0, (int previousValue, element) => previousValue | element.flag);
 
   /// Create a Store Request which will skip all caches and hit your fetcher
@@ -41,18 +41,18 @@ class StoreRequest<Key> {
   }
 
   static StoreRequest<K> skipMemory<K>(K key, bool refresh) {
-    return StoreRequest._(key, _CacheType.MEMORY.flag, refresh: refresh);
+    return StoreRequest._(key, CacheType.MEMORY.flag, refresh: refresh);
   }
 }
 
-enum _CacheType { MEMORY, DISK }
+enum CacheType { MEMORY, DISK }
 
-extension on _CacheType {
+extension on CacheType {
   int get flag {
     switch (this) {
-      case _CacheType.MEMORY:
+      case CacheType.MEMORY:
         return int.parse('0b01', radix: 2);
-      case _CacheType.DISK:
+      case CacheType.DISK:
         // TODO: Handle this case.
         return int.parse('0b10', radix: 2);
     }

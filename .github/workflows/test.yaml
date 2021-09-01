@@ -1,0 +1,47 @@
+name: Dart CI
+on:
+  push:
+    branches:
+      - main
+  pull_request: { }
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package:
+          - stored
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: dev
+      - name: get
+        working-directory: ${{ matrix.package }}
+        run: |
+          pub get
+
+      - name: Format
+        working-directory: ${{ matrix.package }}
+        run: dart format --set-exit-if-changed .
+
+      - name: Analyze
+        working-directory: ${{ matrix.package }}
+        run: dartanalyzer --fatal-infos --fatal-warnings lib test
+
+      - name: Run tests
+        working-directory: ${{ matrix.package }}
+        run: |
+          pub run test
+          dart test --coverage=coverage
+          pub run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
+
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.package }}
+          file: ./${{ matrix.package }}/coverage/lcov.info

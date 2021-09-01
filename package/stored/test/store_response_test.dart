@@ -13,4 +13,46 @@ void main() {
             StoreResponse.loading(origin: ResponseOrigin.Fetcher).requireData(),
         throwsA(isA<NullPointerException>()));
   });
+
+  test('throwIfError Exception', () {
+    expect(
+        () => StoreResponse.error(
+                error: Exception(''), origin: ResponseOrigin.Fetcher)
+            .throwIfError(),
+        throwsA(isA<Exception>()));
+  });
+
+  test('throwIfError Message', () {
+    expect(
+        () => StoreResponse.error(
+                error: 'test error', origin: ResponseOrigin.Fetcher)
+            .throwIfError(),
+        throwsA(isA<Exception>()));
+  });
+
+  test('errorMessageOrNull', () {
+    expect(
+        StoreResponse.error(
+                error: FormatException(), origin: ResponseOrigin.Fetcher)
+            .errorMessageOrNull(),
+        contains(FormatException().toString()));
+
+    expect(
+        StoreResponse.error(
+                error: 'test error message', origin: ResponseOrigin.Fetcher)
+            .errorMessageOrNull(),
+        'test error message');
+
+    expect(
+        StoreResponse.loading(origin: ResponseOrigin.Fetcher)
+            .errorMessageOrNull(),
+        isNull);
+  });
+
+  test('swap type', () {
+    expect(
+        () => StoreResponse.data(origin: ResponseOrigin.Fetcher, value: 'Foo')
+            .swapType<String>(),
+        throwsA(isA<Exception>()));
+  });
 }

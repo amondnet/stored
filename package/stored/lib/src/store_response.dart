@@ -18,8 +18,17 @@ abstract class StoreResponse<T> {
           {required ResponseOrigin origin, required T value}) =>
       DataStoreResponse<T>(value, origin);
 
-  static StoreResponse<Null> loading({required ResponseOrigin origin}) =>
-      LoadingStoreResponse(origin);
+  static StoreResponse<T> loading<T>({required ResponseOrigin origin}) =>
+      LoadingStoreResponse<T>(origin);
+
+  static StoreResponse<T> error<T>(
+          {required dynamic error, required ResponseOrigin origin}) =>
+      error is String
+          ? ErrorMessageStoreResponse<T>(error, origin)
+          : ExceptionStoreResponse<T>(error, origin);
+
+  static StoreResponse<T> noNewData<T>({required ResponseOrigin origin}) =>
+      NoNewDataStoreResponse<T>(origin);
 
   T requireData() {
     if (this is DataStoreResponse) {
@@ -57,7 +66,7 @@ abstract class StoreResponse<T> {
 
   @internal
   @optionalTypeArgs
-  StoreResponse<R> swapType<R>() {
+  StoreResponse<R> swapType<R extends Object>() {
     if (this is ErrorStoreResponse) {
       return this as StoreResponse<R>;
     } else if (this is LoadingStoreResponse) {
@@ -72,7 +81,7 @@ abstract class StoreResponse<T> {
   }
 }
 
-class LoadingStoreResponse extends StoreResponse<Null> {
+class LoadingStoreResponse<T> extends StoreResponse<T> {
   LoadingStoreResponse(ResponseOrigin origin) : super(origin);
 }
 
@@ -82,22 +91,22 @@ class DataStoreResponse<T> extends StoreResponse<T> {
   DataStoreResponse(this.value, ResponseOrigin origin) : super(origin);
 }
 
-class NoNewDataStoreResponse extends StoreResponse<Null> {
+class NoNewDataStoreResponse<T> extends StoreResponse<T> {
   NoNewDataStoreResponse(ResponseOrigin origin) : super(origin);
 }
 
 @sealed
-abstract class ErrorStoreResponse extends StoreResponse<Null> {
+abstract class ErrorStoreResponse<T> extends StoreResponse<T> {
   ErrorStoreResponse(ResponseOrigin origin) : super(origin);
 }
 
-class ExceptionStoreResponse extends ErrorStoreResponse {
+class ExceptionStoreResponse<T> extends ErrorStoreResponse<T> {
   final Exception error;
 
   ExceptionStoreResponse(this.error, ResponseOrigin origin) : super(origin);
 }
 
-class ErrorMessageStoreResponse extends ErrorStoreResponse {
+class ErrorMessageStoreResponse<T> extends ErrorStoreResponse<T> {
   final String message;
 
   ErrorMessageStoreResponse(this.message, ResponseOrigin origin)

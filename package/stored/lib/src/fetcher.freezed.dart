@@ -1,5 +1,6 @@
+// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'fetcher.dart';
 
@@ -22,8 +23,10 @@ class _$FetcherResultTearOff {
     );
   }
 
-  _ErrorFetcherResult<T> error<T>() {
-    return _ErrorFetcherResult<T>();
+  ErrorFetcherResult<T> error<T>(dynamic error) {
+    return ErrorFetcherResult<T>(
+      error,
+    );
   }
 }
 
@@ -35,26 +38,38 @@ mixin _$FetcherResult<T> {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(T data) data,
-    required TResult Function() error,
+    required TResult Function(dynamic error) error,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function(T data)? data,
+    TResult Function(dynamic error)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(T data)? data,
-    TResult Function()? error,
+    TResult Function(dynamic error)? error,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(DataFetcherResult<T> value) data,
-    required TResult Function(_ErrorFetcherResult<T> value) error,
+    required TResult Function(ErrorFetcherResult<T> value) error,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(DataFetcherResult<T> value)? data,
+    TResult Function(ErrorFetcherResult<T> value)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DataFetcherResult<T> value)? data,
-    TResult Function(_ErrorFetcherResult<T> value)? error,
+    TResult Function(ErrorFetcherResult<T> value)? error,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -144,16 +159,25 @@ class _$DataFetcherResult<T> implements DataFetcherResult<T> {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(T data) data,
-    required TResult Function() error,
+    required TResult Function(dynamic error) error,
   }) {
     return data(this.data);
   }
 
   @override
   @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function(T data)? data,
+    TResult Function(dynamic error)? error,
+  }) {
+    return data?.call(this.data);
+  }
+
+  @override
+  @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(T data)? data,
-    TResult Function()? error,
+    TResult Function(dynamic error)? error,
     required TResult orElse(),
   }) {
     if (data != null) {
@@ -166,16 +190,25 @@ class _$DataFetcherResult<T> implements DataFetcherResult<T> {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(DataFetcherResult<T> value) data,
-    required TResult Function(_ErrorFetcherResult<T> value) error,
+    required TResult Function(ErrorFetcherResult<T> value) error,
   }) {
     return data(this);
   }
 
   @override
   @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(DataFetcherResult<T> value)? data,
+    TResult Function(ErrorFetcherResult<T> value)? error,
+  }) {
+    return data?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DataFetcherResult<T> value)? data,
-    TResult Function(_ErrorFetcherResult<T> value)? error,
+    TResult Function(ErrorFetcherResult<T> value)? error,
     required TResult orElse(),
   }) {
     if (data != null) {
@@ -195,60 +228,95 @@ abstract class DataFetcherResult<T> implements FetcherResult<T> {
 }
 
 /// @nodoc
-abstract class _$ErrorFetcherResultCopyWith<T, $Res> {
-  factory _$ErrorFetcherResultCopyWith(_ErrorFetcherResult<T> value,
-          $Res Function(_ErrorFetcherResult<T>) then) =
-      __$ErrorFetcherResultCopyWithImpl<T, $Res>;
+abstract class $ErrorFetcherResultCopyWith<T, $Res> {
+  factory $ErrorFetcherResultCopyWith(ErrorFetcherResult<T> value,
+          $Res Function(ErrorFetcherResult<T>) then) =
+      _$ErrorFetcherResultCopyWithImpl<T, $Res>;
+  $Res call({dynamic error});
 }
 
 /// @nodoc
-class __$ErrorFetcherResultCopyWithImpl<T, $Res>
+class _$ErrorFetcherResultCopyWithImpl<T, $Res>
     extends _$FetcherResultCopyWithImpl<T, $Res>
-    implements _$ErrorFetcherResultCopyWith<T, $Res> {
-  __$ErrorFetcherResultCopyWithImpl(_ErrorFetcherResult<T> _value,
-      $Res Function(_ErrorFetcherResult<T>) _then)
-      : super(_value, (v) => _then(v as _ErrorFetcherResult<T>));
+    implements $ErrorFetcherResultCopyWith<T, $Res> {
+  _$ErrorFetcherResultCopyWithImpl(
+      ErrorFetcherResult<T> _value, $Res Function(ErrorFetcherResult<T>) _then)
+      : super(_value, (v) => _then(v as ErrorFetcherResult<T>));
 
   @override
-  _ErrorFetcherResult<T> get _value => super._value as _ErrorFetcherResult<T>;
+  ErrorFetcherResult<T> get _value => super._value as ErrorFetcherResult<T>;
+
+  @override
+  $Res call({
+    Object? error = freezed,
+  }) {
+    return _then(ErrorFetcherResult<T>(
+      error == freezed
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as dynamic,
+    ));
+  }
 }
 
 /// @nodoc
 
-class _$_ErrorFetcherResult<T> implements _ErrorFetcherResult<T> {
-  _$_ErrorFetcherResult();
+class _$ErrorFetcherResult<T> implements ErrorFetcherResult<T> {
+  _$ErrorFetcherResult(this.error);
+
+  @override
+  final dynamic error;
 
   @override
   String toString() {
-    return 'FetcherResult<$T>.error()';
+    return 'FetcherResult<$T>.error(error: $error)';
   }
 
   @override
   bool operator ==(dynamic other) {
-    return identical(this, other) || (other is _ErrorFetcherResult<T>);
+    return identical(this, other) ||
+        (other is ErrorFetcherResult<T> &&
+            (identical(other.error, error) ||
+                const DeepCollectionEquality().equals(other.error, error)));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode =>
+      runtimeType.hashCode ^ const DeepCollectionEquality().hash(error);
+
+  @JsonKey(ignore: true)
+  @override
+  $ErrorFetcherResultCopyWith<T, ErrorFetcherResult<T>> get copyWith =>
+      _$ErrorFetcherResultCopyWithImpl<T, ErrorFetcherResult<T>>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(T data) data,
-    required TResult Function() error,
+    required TResult Function(dynamic error) error,
   }) {
-    return error();
+    return error(this.error);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function(T data)? data,
+    TResult Function(dynamic error)? error,
+  }) {
+    return error?.call(this.error);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(T data)? data,
-    TResult Function()? error,
+    TResult Function(dynamic error)? error,
     required TResult orElse(),
   }) {
     if (error != null) {
-      return error();
+      return error(this.error);
     }
     return orElse();
   }
@@ -257,16 +325,25 @@ class _$_ErrorFetcherResult<T> implements _ErrorFetcherResult<T> {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(DataFetcherResult<T> value) data,
-    required TResult Function(_ErrorFetcherResult<T> value) error,
+    required TResult Function(ErrorFetcherResult<T> value) error,
   }) {
     return error(this);
   }
 
   @override
   @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(DataFetcherResult<T> value)? data,
+    TResult Function(ErrorFetcherResult<T> value)? error,
+  }) {
+    return error?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DataFetcherResult<T> value)? data,
-    TResult Function(_ErrorFetcherResult<T> value)? error,
+    TResult Function(ErrorFetcherResult<T> value)? error,
     required TResult orElse(),
   }) {
     if (error != null) {
@@ -276,313 +353,11 @@ class _$_ErrorFetcherResult<T> implements _ErrorFetcherResult<T> {
   }
 }
 
-abstract class _ErrorFetcherResult<T> implements FetcherResult<T> {
-  factory _ErrorFetcherResult() = _$_ErrorFetcherResult<T>;
-}
+abstract class ErrorFetcherResult<T> implements FetcherResult<T> {
+  factory ErrorFetcherResult(dynamic error) = _$ErrorFetcherResult<T>;
 
-/// @nodoc
-class _$ErrorFetcherResultTearOff {
-  const _$ErrorFetcherResultTearOff();
-
-  ExceptionErrorFetcherResult exception(Exception exception) {
-    return ExceptionErrorFetcherResult(
-      exception,
-    );
-  }
-
-  MessageErrorFetcherResult message(String message) {
-    return MessageErrorFetcherResult(
-      message,
-    );
-  }
-}
-
-/// @nodoc
-const $ErrorFetcherResult = _$ErrorFetcherResultTearOff();
-
-/// @nodoc
-mixin _$ErrorFetcherResult {
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(Exception exception) exception,
-    required TResult Function(String message) message,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Exception exception)? exception,
-    TResult Function(String message)? message,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ExceptionErrorFetcherResult value) exception,
-    required TResult Function(MessageErrorFetcherResult value) message,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ExceptionErrorFetcherResult value)? exception,
-    TResult Function(MessageErrorFetcherResult value)? message,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $ErrorFetcherResultCopyWith<$Res> {
-  factory $ErrorFetcherResultCopyWith(
-          ErrorFetcherResult value, $Res Function(ErrorFetcherResult) then) =
-      _$ErrorFetcherResultCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class _$ErrorFetcherResultCopyWithImpl<$Res>
-    implements $ErrorFetcherResultCopyWith<$Res> {
-  _$ErrorFetcherResultCopyWithImpl(this._value, this._then);
-
-  final ErrorFetcherResult _value;
-  // ignore: unused_field
-  final $Res Function(ErrorFetcherResult) _then;
-}
-
-/// @nodoc
-abstract class $ExceptionErrorFetcherResultCopyWith<$Res> {
-  factory $ExceptionErrorFetcherResultCopyWith(
-          ExceptionErrorFetcherResult value,
-          $Res Function(ExceptionErrorFetcherResult) then) =
-      _$ExceptionErrorFetcherResultCopyWithImpl<$Res>;
-  $Res call({Exception exception});
-}
-
-/// @nodoc
-class _$ExceptionErrorFetcherResultCopyWithImpl<$Res>
-    extends _$ErrorFetcherResultCopyWithImpl<$Res>
-    implements $ExceptionErrorFetcherResultCopyWith<$Res> {
-  _$ExceptionErrorFetcherResultCopyWithImpl(ExceptionErrorFetcherResult _value,
-      $Res Function(ExceptionErrorFetcherResult) _then)
-      : super(_value, (v) => _then(v as ExceptionErrorFetcherResult));
-
-  @override
-  ExceptionErrorFetcherResult get _value =>
-      super._value as ExceptionErrorFetcherResult;
-
-  @override
-  $Res call({
-    Object? exception = freezed,
-  }) {
-    return _then(ExceptionErrorFetcherResult(
-      exception == freezed
-          ? _value.exception
-          : exception // ignore: cast_nullable_to_non_nullable
-              as Exception,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$ExceptionErrorFetcherResult implements ExceptionErrorFetcherResult {
-  _$ExceptionErrorFetcherResult(this.exception);
-
-  @override
-  final Exception exception;
-
-  @override
-  String toString() {
-    return 'ErrorFetcherResult.exception(exception: $exception)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is ExceptionErrorFetcherResult &&
-            (identical(other.exception, exception) ||
-                const DeepCollectionEquality()
-                    .equals(other.exception, exception)));
-  }
-
-  @override
-  int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(exception);
-
+  dynamic get error => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  @override
-  $ExceptionErrorFetcherResultCopyWith<ExceptionErrorFetcherResult>
-      get copyWith => _$ExceptionErrorFetcherResultCopyWithImpl<
-          ExceptionErrorFetcherResult>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(Exception exception) exception,
-    required TResult Function(String message) message,
-  }) {
-    return exception(this.exception);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Exception exception)? exception,
-    TResult Function(String message)? message,
-    required TResult orElse(),
-  }) {
-    if (exception != null) {
-      return exception(this.exception);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ExceptionErrorFetcherResult value) exception,
-    required TResult Function(MessageErrorFetcherResult value) message,
-  }) {
-    return exception(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ExceptionErrorFetcherResult value)? exception,
-    TResult Function(MessageErrorFetcherResult value)? message,
-    required TResult orElse(),
-  }) {
-    if (exception != null) {
-      return exception(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class ExceptionErrorFetcherResult implements ErrorFetcherResult {
-  factory ExceptionErrorFetcherResult(Exception exception) =
-      _$ExceptionErrorFetcherResult;
-
-  Exception get exception => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $ExceptionErrorFetcherResultCopyWith<ExceptionErrorFetcherResult>
-      get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $MessageErrorFetcherResultCopyWith<$Res> {
-  factory $MessageErrorFetcherResultCopyWith(MessageErrorFetcherResult value,
-          $Res Function(MessageErrorFetcherResult) then) =
-      _$MessageErrorFetcherResultCopyWithImpl<$Res>;
-  $Res call({String message});
-}
-
-/// @nodoc
-class _$MessageErrorFetcherResultCopyWithImpl<$Res>
-    extends _$ErrorFetcherResultCopyWithImpl<$Res>
-    implements $MessageErrorFetcherResultCopyWith<$Res> {
-  _$MessageErrorFetcherResultCopyWithImpl(MessageErrorFetcherResult _value,
-      $Res Function(MessageErrorFetcherResult) _then)
-      : super(_value, (v) => _then(v as MessageErrorFetcherResult));
-
-  @override
-  MessageErrorFetcherResult get _value =>
-      super._value as MessageErrorFetcherResult;
-
-  @override
-  $Res call({
-    Object? message = freezed,
-  }) {
-    return _then(MessageErrorFetcherResult(
-      message == freezed
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$MessageErrorFetcherResult implements MessageErrorFetcherResult {
-  _$MessageErrorFetcherResult(this.message);
-
-  @override
-  final String message;
-
-  @override
-  String toString() {
-    return 'ErrorFetcherResult.message(message: $message)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other is MessageErrorFetcherResult &&
-            (identical(other.message, message) ||
-                const DeepCollectionEquality().equals(other.message, message)));
-  }
-
-  @override
-  int get hashCode =>
-      runtimeType.hashCode ^ const DeepCollectionEquality().hash(message);
-
-  @JsonKey(ignore: true)
-  @override
-  $MessageErrorFetcherResultCopyWith<MessageErrorFetcherResult> get copyWith =>
-      _$MessageErrorFetcherResultCopyWithImpl<MessageErrorFetcherResult>(
-          this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(Exception exception) exception,
-    required TResult Function(String message) message,
-  }) {
-    return message(this.message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Exception exception)? exception,
-    TResult Function(String message)? message,
-    required TResult orElse(),
-  }) {
-    if (message != null) {
-      return message(this.message);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ExceptionErrorFetcherResult value) exception,
-    required TResult Function(MessageErrorFetcherResult value) message,
-  }) {
-    return message(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ExceptionErrorFetcherResult value)? exception,
-    TResult Function(MessageErrorFetcherResult value)? message,
-    required TResult orElse(),
-  }) {
-    if (message != null) {
-      return message(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class MessageErrorFetcherResult implements ErrorFetcherResult {
-  factory MessageErrorFetcherResult(String message) =
-      _$MessageErrorFetcherResult;
-
-  String get message => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $MessageErrorFetcherResultCopyWith<MessageErrorFetcherResult> get copyWith =>
+  $ErrorFetcherResultCopyWith<T, ErrorFetcherResult<T>> get copyWith =>
       throw _privateConstructorUsedError;
 }
