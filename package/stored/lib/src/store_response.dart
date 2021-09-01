@@ -18,6 +18,9 @@ abstract class StoreResponse<T> {
           {required ResponseOrigin origin, required T value}) =>
       DataStoreResponse<T>(value, origin);
 
+  static StoreResponse<Null> loading({required ResponseOrigin origin}) =>
+      LoadingStoreResponse(origin);
+
   T requireData() {
     if (this is DataStoreResponse) {
       return (this as DataStoreResponse).value;
