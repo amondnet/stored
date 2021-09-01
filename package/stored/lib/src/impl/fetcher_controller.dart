@@ -26,7 +26,7 @@ class FetcherController<Key, Input, Output> {
         .map((event) {
           return event.map(
               data: (value) => StoreResponse.data<Input>(
-                  origin: ResponseOrigin.Fetcher, value: value as Input),
+                  origin: ResponseOrigin.Fetcher, value: value.data as Input),
               error: (error) => StoreResponse.error<Input>(
                   error: error, origin: ResponseOrigin.Fetcher));
         })
