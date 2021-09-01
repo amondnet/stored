@@ -20,22 +20,22 @@ jobs:
 
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: 2.12.0
+          sdk: ${{ matrix.sdk }}
       - name: get
-        working-directory: ${{ matrix.package }}
+        working-directory: package/${{ matrix.package }}
         run: |
           dart pub get
 
       - name: Format
-        working-directory: ${{ matrix.package }}
+        working-directory: package/${{ matrix.package }}
         run: dart format --set-exit-if-changed .
 
       - name: Analyze
-        working-directory: ${{ matrix.package }}
+        working-directory: package/${{ matrix.package }}
         run: dartanalyzer --fatal-infos --fatal-warnings lib test
 
       - name: Run tests
-        working-directory: ${{ matrix.package }}
+        working-directory: package/${{ matrix.package }}
         run: |
           pub run test
           dart test --coverage=coverage
@@ -46,4 +46,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ matrix.package }}
-          file: ./${{ matrix.package }}/coverage/lcov.info
+          file: package/${{ matrix.package }}/coverage/lcov.info
