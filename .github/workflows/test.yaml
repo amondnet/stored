@@ -10,19 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        package:
-          - stored
+        package: [ stored ]
+
+        sdk: [ stable ]
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
       - uses: dart-lang/setup-dart@v1
-
+        with:
+          sdk: 2.12.0
       - name: get
         working-directory: ${{ matrix.package }}
         run: |
-          pub get
+          dart pub get
 
       - name: Format
         working-directory: ${{ matrix.package }}
