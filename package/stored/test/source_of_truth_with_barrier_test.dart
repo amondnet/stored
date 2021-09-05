@@ -22,16 +22,15 @@ void main() {
     final source = SourceOfTruthWithBarrier(delegate);
 
     test('simple', () async {
-      source.write(1, 'a');
+      final collector = source.reader(1, Future.value(1)).take(2).toList();
+      await source.write(1, 'a');
 
-      await expectLater(
-          source.reader(1, Future.value(1)),
-          emitsInOrder([
-            StoreResponse.data<String?>(
-                origin: ResponseOrigin.SourceOfTruth, value: null),
-            StoreResponse.data<String>(
-                origin: ResponseOrigin.Fetcher, value: 'a')
-          ]));
+      await collector;
+      expect(() async => await collector, [
+        StoreResponse.data<String?>(
+            origin: ResponseOrigin.SourceOfTruth, value: null),
+        StoreResponse.data<String>(origin: ResponseOrigin.Fetcher, value: 'a')
+      ]);
     });
   });
 }
