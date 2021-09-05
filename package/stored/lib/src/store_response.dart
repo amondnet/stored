@@ -19,7 +19,7 @@ abstract class StoreResponse<T> extends Equatable {
           {required ResponseOrigin origin, required T value}) =>
       DataStoreResponse<T>(value, origin);
 
-  static StoreResponse<T> loading<T>({required ResponseOrigin origin}) =>
+  static LoadingStoreResponse<T> loading<T>({required ResponseOrigin origin}) =>
       LoadingStoreResponse<T>(origin);
 
   static StoreResponse<T> error<T>(
@@ -32,8 +32,8 @@ abstract class StoreResponse<T> extends Equatable {
       NoNewDataStoreResponse<T>(origin);
 
   T requireData() {
-    if (this is DataStoreResponse) {
-      return (this as DataStoreResponse).value;
+    if (this is DataStoreResponse<T>) {
+      return (this as DataStoreResponse<T>).value;
     } else if (this is ErrorStoreResponse) {
       (this as ErrorStoreResponse).doThrow();
     }
@@ -59,18 +59,19 @@ abstract class StoreResponse<T> extends Equatable {
   }
 
   T? dataOrNull() {
-    if (this is DataStoreResponse) {
-      return (this as DataStoreResponse).value;
+    if (this is DataStoreResponse<T>) {
+      return (this as DataStoreResponse<T>).value;
     }
     return null;
   }
 
   @internal
   @optionalTypeArgs
-  StoreResponse<R> swapType<R extends Object>() {
+  StoreResponse<R> swapType<R>() {
     if (this is ErrorStoreResponse) {
       return this as StoreResponse<R>;
     } else if (this is LoadingStoreResponse) {
+      return StoreResponse.loading<R>(origin: origin);
       return this as StoreResponse<R>;
     } else if (this is NoNewDataStoreResponse) {
       return this as StoreResponse<R>;

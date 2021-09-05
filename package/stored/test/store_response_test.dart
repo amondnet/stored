@@ -55,4 +55,11 @@ void main() {
             .swapType<String>(),
         throwsA(isA<Exception>()));
   });
+
+  test('swap type 2', () {
+    final swap = StoreResponse.loading<String>(
+      origin: ResponseOrigin.Fetcher,
+    ).swapType<String>();
+    expect(swap, isA<StoreResponse<String>>());
+  });
 }

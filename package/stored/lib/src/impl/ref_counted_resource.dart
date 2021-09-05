@@ -19,7 +19,6 @@ class RefCountedResource<Key, T> {
   Future<T> acquire(Key key) => _lock.synchronized(() {
         final value =
             (_items.putIfAbsent(key, () => _Item(_create(key)))..inc()).value;
-        print(value);
         return value;
       });
 

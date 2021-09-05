@@ -51,10 +51,9 @@ extension on CacheType {
   int get flag {
     switch (this) {
       case CacheType.MEMORY:
-        return int.parse('0b01', radix: 2);
+        return int.parse('01', radix: 2);
       case CacheType.DISK:
-        // TODO: Handle this case.
-        return int.parse('0b10', radix: 2);
+        return int.parse('10', radix: 2);
     }
   }
 }
