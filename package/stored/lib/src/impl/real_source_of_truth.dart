@@ -20,7 +20,10 @@ class PersistentSourceOfTruth<Key, Input, Output>
   Future<void> deleteAll() async => _realDeleteAll?.call();
 
   @override
-  Stream<Output?> reader(Key key) => _realReader(key);
+  Stream<Output?> reader(Key key) {
+    print('reader');
+    return _realReader(key);
+  }
 
   @override
   Future<void> write(Key key, Input value) => _realWriter(key, value);

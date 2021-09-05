@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:stored/src/impl/ref_counted_resource.dart';
@@ -28,11 +30,16 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
   Stream<StoreResponse<Output?>> reader(Key key, Future lock) async* {
     final barrier = await _barriers.acquire(key);
     final readerVersion = ++_versionCounter;
+    print('reader version : $readerVersion');
+
     try {
       await lock;
 
       yield* barrier.switchMap((value) {
+        print('value : $value}');
         final messageArriveAfterMe = readerVersion < value.version;
+        print('messageArriveAfterMe : $messageArriveAfterMe');
+
         var writeError;
         if (messageArriveAfterMe && value is Open) {
           writeError = value.writeError;
@@ -41,18 +48,24 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
         Stream<StoreResponse<Output?>> readStream;
 
         if (value is Open) {
+          print('value is open');
           var index = 0;
           readStream = _delegate.reader(key).map((output) {
+            print('index is $index');
+
             if (index++ == 0 && messageArriveAfterMe) {
               var firstMsgOrigin;
               if (writeError == null) {
+                print('write error is null');
                 firstMsgOrigin = ResponseOrigin.Fetcher;
               } else {
                 firstMsgOrigin = ResponseOrigin.SourceOfTruth;
               }
-              return StoreResponse.data(origin: firstMsgOrigin, value: output);
+              return StoreResponse.data<Output?>(
+                  origin: firstMsgOrigin, value: output);
             } else {
-              return StoreResponse.data(
+              print('else');
+              return StoreResponse.data<Output?>(
                   origin: ResponseOrigin.SourceOfTruth, value: output);
             }
           }).handleError((error, stackTrace) => ExceptionStoreResponse(
@@ -60,6 +73,7 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
               ResponseOrigin.SourceOfTruth));
         } else {
           // blocked
+          print('blocked');
           readStream = Stream.empty();
         }
 
@@ -74,16 +88,20 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
                                         )
                                     }
          */
+        print('read stream');
         return readStream;
       });
     } finally {
       // we are using a finally here instead of onCompletion as there might be a
       // possibility where flow gets cancelled right before `emitAll`.
+      print('finally release');
       await _barriers.release(key, barrier);
     }
   }
 
   Future<void> write(Key key, Input value) async {
+    print('write');
+
     final barrier = await _barriers.acquire(key);
 
     try {
@@ -91,6 +109,7 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
       var writeError;
       try {
         await _delegate.write(key, value);
+        print('written');
         writeError = null;
       } catch (e) {
         writeError = e;

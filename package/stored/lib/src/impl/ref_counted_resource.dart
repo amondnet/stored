@@ -17,8 +17,10 @@ class RefCountedResource<Key, T> {
       : _onRelease = onRelease;
 
   Future<T> acquire(Key key) => _lock.synchronized(() {
-        return (_items.putIfAbsent(key, () => _Item(_create(key)))..inc())
-            .value;
+        final value =
+            (_items.putIfAbsent(key, () => _Item(_create(key)))..inc()).value;
+        print(value);
+        return value;
       });
 
   Future<void> release(Key key, T value) => _lock.synchronized(() {
