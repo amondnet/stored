@@ -17,7 +17,7 @@ void main() {
 
   test(
       'GIVEN Source of Truth WHEN write fails THEN exception should be send to the collector',
-      () {
+      () async {
     final persister = InMemoryPersister<int, String>();
     final fetcher = FakeFetcher([MapEntry(3, 'a'), MapEntry(3, 'b')]);
 
@@ -31,7 +31,7 @@ void main() {
     ) =>
         throw _TestException('i fail');
 
-    expectLater(
+    await expectLater(
         pipeline.stream(StoreRequest.fresh(3)),
         emitsInOrder([
           StoreResponse.loading<String>(origin: ResponseOrigin.Fetcher),

@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart';
 import 'package:stored/src/source_of_truth.dart';
 
 class PersistentSourceOfTruth<Key, Input, Output>
@@ -6,6 +7,8 @@ class PersistentSourceOfTruth<Key, Input, Output>
   final Future<void> Function(Key, Input) _realWriter;
   final Future<void> Function(Key)? _realDelete;
   final Future<void> Function()? _realDeleteAll;
+
+  final Logger _logger = Logger('PersistentSourceOfTruth');
 
   PersistentSourceOfTruth(this._realReader, this._realWriter,
       {Future<void> Function(Key)? realDelete,
@@ -21,7 +24,7 @@ class PersistentSourceOfTruth<Key, Input, Output>
 
   @override
   Stream<Output?> reader(Key key) {
-    print('reader');
+    _logger.finest('reader for $key');
     return _realReader(key);
   }
 

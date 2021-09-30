@@ -34,64 +34,81 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
   Stream<StoreResponse<Output?>> reader(Key key, Future lock) async* {
     final barrier = await _barriers.acquire(key);
     final readerVersion = ++_versionCounter;
-    _logger.info('reader version : $readerVersion');
+    _logger.finest('reader version : $readerVersion');
 
     try {
       await lock;
 
       yield* barrier.switchMap((value) {
-        _logger.info('value : $value}');
+        _logger.finest('value : $value');
         final messageArriveAfterMe = readerVersion < value.version;
-        _logger.info('messageArriveAfterMe : $messageArriveAfterMe');
+        _logger.finest('messageArriveAfterMe : $messageArriveAfterMe');
 
         var writeError;
         if (messageArriveAfterMe && value is Open) {
           writeError = value.writeError;
+        } else {
+          writeError = null;
         }
 
         Stream<StoreResponse<Output?>> readStream;
 
         if (value is Open) {
-          print('value is open');
           var index = 0;
-          readStream = _delegate.reader(key).map((output) {
-            print('index is $index');
 
-            if (index++ == 0 && messageArriveAfterMe) {
+          final _transformer =
+              StreamTransformer<Output?, StoreResponse<Output?>>.fromHandlers(
+                  handleData: (data, sink) {
+            _logger.finest('index is $index');
+
+            if (index == 0 && messageArriveAfterMe) {
               var firstMsgOrigin;
               if (writeError == null) {
-                print('write error is null');
+                _logger.finest('firstMsgOrigin : Fetcher');
+                // restarted barrier without an error means write succeeded
                 firstMsgOrigin = ResponseOrigin.Fetcher;
               } else {
+                // when a write fails, we still get a new reader because
+                // we've disabled the previous reader before starting the
+                // write operation. But since write has failed, we should
+                // use the SourceOfTruth as the origin
+                _logger.finest('firstMsgOrigin : SourceOfTruth');
                 firstMsgOrigin = ResponseOrigin.SourceOfTruth;
               }
-              return StoreResponse.data<Output?>(
-                  origin: firstMsgOrigin, value: output);
+              _logger.finest('return first msg');
+              index++;
+              sink.add(StoreResponse.data(origin: firstMsgOrigin, value: data));
             } else {
-              print('else');
-              return StoreResponse.data<Output?>(
-                  origin: ResponseOrigin.SourceOfTruth, value: output);
+              _logger.finest('return from source of truth');
+              index++;
+              sink.add(StoreResponse.data(
+                  origin: ResponseOrigin.SourceOfTruth, value: data));
             }
-          }).handleError((error, stackTrace) => ExceptionStoreResponse(
-              ReadException(key: key, cause: error),
-              ResponseOrigin.SourceOfTruth));
+          }, handleError: (error, stackTrace, sink) {
+            _logger.finest('handle error for $error', error);
+            sink.add(ExceptionStoreResponse<Output?>(
+                ReadException(key: key, cause: error),
+                ResponseOrigin.SourceOfTruth));
+          });
+
+          readStream = _delegate.reader(key).transform(_transformer);
         } else {
           // blocked
           _logger.info('blocked');
           readStream = Stream.empty();
         }
 
-        // TODO(amond): if we have a pending error, make sure to dispatch it first.
-        /*
-         if (writeError != null) {
-                                        emit(
-                                            StoreResponse.Error.Exception(
-                                                origin = ResponseOrigin.SourceOfTruth,
-                                                error = writeError
-                                            )
-                                        )
-                                    }
-         */
+        if (writeError != null) {
+          // if we have a pending error, make sure to dispatch it first.
+          return ConcatStream<StoreResponse<Output?>>([
+            Stream.value(StoreResponse.error(
+                error: writeError, origin: ResponseOrigin.SourceOfTruth)),
+            readStream
+          ]);
+        } else {
+          return readStream;
+        }
+
         return readStream.onStart((sink) {
           if (writeError != null) {
             sink.add(StoreResponse.error(
@@ -115,6 +132,8 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
 
     try {
       barrier.add(BarrierMsg.blocked(++_versionCounter));
+      _logger.finest('_versionCounter : $_versionCounter');
+
       var writeError;
       try {
         await _delegate.write(key, value);
@@ -128,6 +147,8 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
           writeError: writeError != null
               ? WriteException(cause: writeError, key: key, value: value)
               : null));
+      _logger.finest('_versionCounter : $_versionCounter');
+
       //if (writeError is CancellationException) {
       //  // only throw if it failed because of cancelation.
       //  // otherwise, we take care of letting downstream know that there was a write error
@@ -141,6 +162,10 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
   Future<void> delete(Key key) => _delegate.delete(key);
 
   Future<void> deleteAll() => _delegate.deleteAll();
+
+  // visible for testing
+  @visibleForTesting
+  Future<int> get barrierCount => _barriers.size;
 }
 
 @sealed

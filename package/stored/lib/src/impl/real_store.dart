@@ -37,7 +37,7 @@ class RealStore<Key, Input, Output> implements Store<Key, Output> {
             ? SourceOfTruthWithBarrier(sourceOfTruth)
             : null,
         // TODO(amond): use cache implmentation
-        _memCache = MapCache.lru() {
+        _memCache = memoryPolicy == null ? null : MapCache.lru() {
     _fetcherController = FetcherController<Key, Input, Output>(fetcher,
         sourceOfTruth: _sourceOfTruth);
   }
@@ -128,26 +128,24 @@ class RealStore<Key, Input, Output> implements Store<Key, Output> {
       {Completer? networkLock, bool piggybackOnly = false}) async* {
     _logger.finest('createdNetworkStream');
 
-    yield* _fetcherController
-        .getFetcher(request.key, piggybackOnly: piggybackOnly)
-        .onStart((s) async {
-      if (networkLock != null) {
-        _logger.finest('wait network lock');
+    if (networkLock != null) {
+      _logger.finest('wait network lock');
+      await networkLock.future;
+    }
 
-        //_controller.add(StoreResponse.loading(origin: ResponseOrigin.Fetcher));
-        // await networkLock.future;
-      }
-      if (!piggybackOnly) {
-        s.add(StoreResponse.loading<Input>(origin: ResponseOrigin.Fetcher));
-      }
-    });
-    ;
+    if (!piggybackOnly) {
+      _logger.finest('add loading');
+      yield StoreResponse.loading<Input>(origin: ResponseOrigin.Fetcher);
+    }
+
+    yield* _fetcherController.getFetcher(request.key,
+        piggybackOnly: piggybackOnly);
   }
 
   Stream<StoreResponse<Output>> diskNetworkCombined(
     StoreRequest<Key> request,
     SourceOfTruthWithBarrier<Key, Input, Output> sourceOfTruth,
-  ) {
+  ) async* {
     _logger.finest('diskNetworkCombined');
     final diskLock = Completer<void>.sync();
     final networkLock = Completer<void>.sync();
@@ -173,7 +171,7 @@ class RealStore<Key, Input, Output> implements Store<Key, Output> {
       return Future.value(null);
     });
 
-    return networkStream.transform<StoreResponse<Output>>(
+    yield* networkStream.transform<StoreResponse<Output>>(
         StreamTransformer.fromHandlers(
             handleData: (StoreResponse<Input> data, sink) {
       if (data is DataStoreResponse || data is NoNewDataStoreResponse) {
@@ -190,7 +188,7 @@ class RealStore<Key, Input, Output> implements Store<Key, Output> {
       if (diskData is DataStoreResponse) {
         final diskValue = (diskData as DataStoreResponse).value;
         if (diskValue != null) {
-          sink.add(diskData as StoreResponse<Output>);
+          sink.add(DataStoreResponse<Output>(diskValue, diskData.origin));
         }
         // If the disk value is null or refresh was requested then allow fetcher
         // to start emitting values.

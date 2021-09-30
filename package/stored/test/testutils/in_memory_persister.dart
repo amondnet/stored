@@ -8,8 +8,10 @@ class InMemoryPersister<Key, Output> {
   Future<Output?> Function(Key, Output?)? postReadCallback;
 
   Future<Output?> read(Key key) async {
+    print('read');
     final value = _data[key];
     await postReadCallback?.call(key, value);
+
     return value;
   }
 
