@@ -142,10 +142,32 @@ class RealStore<Key, Input, Output> implements Store<Key, Output> {
         piggybackOnly: piggybackOnly);
   }
 
+  /// We want to stream from disk but also want to refresh. If requested or necessary.
+  ///
+  /// How it works:
+  /// There are two flows:
+  /// Fetcher: The flow we get for the fetching
+  /// Disk: The flow we get from the [SourceOfTruth].
+  /// Both flows are controlled by a lock for each so that we can start the right one based on
+  /// the request status or values we receive.
+  ///
+  /// Value is always returned from [SourceOfTruth] while the errors are dispatched from both the
+  /// `Fetcher` and [SourceOfTruth].
+  ///
+  /// There are two initialization paths:
+  ///
+  /// 1) Request wants to skip disk cache:
+  /// In this case, we first start the fetcher flow. When fetcher flow provides something besides
+  /// an error, we enable the disk flow.
+  ///
+  /// 2) Request does not want to skip disk cache:
+  /// In this case, we first start the disk flow. If disk flow returns `null` or
+  /// [StoreRequest.refresh] is set to `true`, we enable the fetcher flow.
+  /// This ensures we first get the value from disk and then load from server if necessary.
   Stream<StoreResponse<Output>> diskNetworkCombined(
     StoreRequest<Key> request,
     SourceOfTruthWithBarrier<Key, Input, Output> sourceOfTruth,
-  ) async* {
+  ) {
     _logger.finest('diskNetworkCombined');
     final diskLock = Completer<void>.sync();
     final networkLock = Completer<void>.sync();
@@ -171,11 +193,16 @@ class RealStore<Key, Input, Output> implements Store<Key, Output> {
       return Future.value(null);
     });
 
-    yield* networkStream.transform<StoreResponse<Output>>(
+    return networkStream.transform<StoreResponse<Output>>(
         StreamTransformer.fromHandlers(
             handleData: (StoreResponse<Input> data, sink) {
       if (data is DataStoreResponse || data is NoNewDataStoreResponse) {
         if (!diskLock.isCompleted) {
+          // Unlocking disk only if network sent data or reported no new data
+          // so that fresh data request never receives new fetcher data after
+          // cached disk data.
+          // This means that if the user asked for fresh data but the network returned
+          // no new data we will still unblock disk.
           diskLock.complete();
         }
       }
@@ -186,14 +213,18 @@ class RealStore<Key, Input, Output> implements Store<Key, Output> {
     })).merge(diskStream
         .transform(StreamTransformer.fromHandlers(handleData: (diskData, sink) {
       if (diskData is DataStoreResponse) {
+        _logger.finest('diskData is Data');
         final diskValue = (diskData as DataStoreResponse).value;
         if (diskValue != null) {
+          _logger.finest('diskValue is not null, add to stream');
           sink.add(DataStoreResponse<Output>(diskValue, diskData.origin));
         }
         // If the disk value is null or refresh was requested then allow fetcher
         // to start emitting values.
         if (request.refresh || (diskData as DataStoreResponse).value == null) {
           if (!networkLock.isCompleted) {
+            _logger.finest('networkLock.complete');
+
             networkLock.complete();
           }
         }

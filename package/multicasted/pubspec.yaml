@@ -1,0 +1,26 @@
+name: multicasted
+description: Dart library for loading data from remote and local sources.
+version: 0.0.0
+homepage: https://github.com/amondnet/stored
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  equatable: ^2.0.0
+  freezed_annotation: ">=0.14.2 <2.0.0"
+  quiver: ^3.0.0
+  synchronized: ^3.0.0
+  rxdart: ^0.27.0
+  async: ^2.8.0
+  meta: ^1.3.0
+  logging:
+  stream_transform: ^2.0.0
+dev_dependencies:
+  pedantic: ^1.10.0
+  test: ^1.16.0
+  freezed: ^0.14.5
+  build_runner: ^2.1.0
+  coverage: ^1.0.3
+  test_cov:
+

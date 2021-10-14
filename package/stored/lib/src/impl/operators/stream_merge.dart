@@ -22,14 +22,11 @@ extension StreamMerge<T> on Stream<T> {
     final _controller =
         isBroadcast ? StreamController<T>.broadcast() : StreamController<T>();
 
-    _controller.onListen = () {
-      _logger.info('onListen');
-      action(_controller).then((_) {
-        _logger.info('action then');
-        _controller.addStream(this);
-      });
-    };
-    //_controller.addStream(this);
+    action(_controller).then((value) {
+      _logger.info('action complete, add stream');
+      _controller.addStream(this);
+    });
+
     return _controller.stream;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:logging/logging.dart';
 import 'package:stored/src/source_of_truth.dart';
 import 'package:stored/src/store_builder.dart';
@@ -31,15 +33,21 @@ void main() {
     ) =>
         throw _TestException('i fail');
 
-    await expectLater(
-        pipeline.stream(StoreRequest.fresh(3)),
-        emitsInOrder([
-          StoreResponse.loading<String>(origin: ResponseOrigin.Fetcher),
-          StoreResponse.error<String>(
-              origin: ResponseOrigin.SourceOfTruth,
-              error: WriteException(
-                  cause: _TestException('i fail'), key: 3, value: 'a')),
-        ]));
+    var index = 0;
+    late Completer awaiter = Completer();
+    pipeline.stream(StoreRequest.fresh(3)).listen((event) {
+      if (index == 0) {
+        expect(event,
+            StoreResponse.loading<String>(origin: ResponseOrigin.Fetcher));
+      } else if (index == 1) {
+        expect(event,
+            StoreResponse.loading<String>(origin: ResponseOrigin.Fetcher));
+        awaiter.complete();
+      } else {
+        expect(1, 2);
+        awaiter.complete();
+      }
+    });
   });
 }
 

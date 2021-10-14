@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:quiver/check.dart';
 import 'package:synchronized/synchronized.dart';
@@ -7,6 +8,7 @@ import 'package:synchronized/synchronized.dart';
 /// Simple holder that can ref-count items by a given key.
 @internal
 class RefCountedResource<Key, T> {
+  final _logger = Logger('RefCountedResource');
   final T Function(Key) _create;
   final Future<void> Function(Key, T)? _onRelease;
 
@@ -17,12 +19,16 @@ class RefCountedResource<Key, T> {
       : _onRelease = onRelease;
 
   Future<T> acquire(Key key) => _lock.synchronized(() {
+        _logger.finest('acquire for $key');
         final value =
             (_items.putIfAbsent(key, () => _Item(_create(key)))..inc()).value;
+        _logger.finest('value is $value');
         return value;
       });
 
   Future<void> release(Key key, T value) => _lock.synchronized(() {
+        _logger.info('release for $key');
+
         final existing = _items[key];
         checkState(existing != null && existing.value == value,
             message:
