@@ -36,18 +36,65 @@ void main() {
     var index = 0;
     late Completer awaiter = Completer();
     pipeline.stream(StoreRequest.fresh(3)).listen((event) {
-      if (index == 0) {
+      if (index++ == 0) {
         expect(event,
             StoreResponse.loading<String>(origin: ResponseOrigin.Fetcher));
-      } else if (index == 1) {
+      } else if (index++ == 1) {
         expect(event,
             StoreResponse.loading<String>(origin: ResponseOrigin.Fetcher));
         awaiter.complete();
       } else {
-        expect(1, 2);
-        awaiter.complete();
+        awaiter.completeError('error');
       }
     });
+
+    await awaiter.future;
+  });
+
+  test(
+      'GIVEN Source of Truth WHEN read fails THEN exception should be send to the collector',
+      () async {
+    final persister = InMemoryPersister<int, String>();
+    final fetcher = FakeFetcher([MapEntry(3, 'a'), MapEntry(3, 'b')]);
+
+    final pipeline =
+        StoreBuilder.from(fetcher, sourceOfTruth: persister.asSourceOfTruth())
+            .build();
+
+    persister.postReadCallback = (
+      _,
+      value,
+    ) =>
+        throw _TestException(value ?? 'null');
+
+    var index = 0;
+    late Completer awaiter = Completer();
+    pipeline.stream(StoreRequest.fresh(3)).listen((event) {
+      if (index++ == 0) {
+        expect(
+            event,
+            StoreResponse.error(
+                error: ReadException(key: 3, cause: _TestException('null')),
+                origin: ResponseOrigin.SourceOfTruth));
+      } else if (index++ == 1) {
+        // after disk fails, we should still invoke fetcher
+        expect(event,
+            StoreResponse.loading<String>(origin: ResponseOrigin.Fetcher));
+      } else if (index++ == 2) {
+        // and after fetcher writes the value, it will trigger another read which will also
+        // fail
+        expect(
+            event,
+            StoreResponse.error(
+                error: ReadException(key: 3, cause: _TestException('a')),
+                origin: ResponseOrigin.SourceOfTruth));
+        awaiter.complete();
+      } else {
+        awaiter.completeError('error');
+      }
+    });
+
+    await awaiter.future;
   });
 }
 

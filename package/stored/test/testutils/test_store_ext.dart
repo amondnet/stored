@@ -5,6 +5,10 @@ import 'package:stored/src/store_response.dart';
 extension TestStoreExt<Key, Output> on Store<Key, Output> {
   Future<StoreResponse<Output>> getData(Key key) =>
       stream(StoreRequest.cached(key, false))
+          .map((event) {
+            print(event);
+            return event;
+          })
           .where((element) => !(element is LoadingStoreResponse))
           .first
           .then((value) => StoreResponse.data<Output>(

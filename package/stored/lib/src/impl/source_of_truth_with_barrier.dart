@@ -39,6 +39,7 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
     try {
       await lock;
 
+      // switchMap is called flatMapLatest
       yield* barrier.switchMap((value) {
         _logger.finest('value : $value');
         final messageArriveAfterMe = readerVersion < value.version;
@@ -99,6 +100,8 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
         }
 
         if (writeError != null) {
+          _logger.finest(
+              'if we have a pending error, make sure to dispatch it first.');
           // if we have a pending error, make sure to dispatch it first.
           return ConcatStream<StoreResponse<Output?>>([
             Stream.value(StoreResponse.error(
@@ -106,16 +109,9 @@ class SourceOfTruthWithBarrier<Key, Input, Output> {
             readStream
           ]);
         } else {
+          _logger.finest('return read stream');
           return readStream;
         }
-
-        return readStream.onStart((sink) {
-          if (writeError != null) {
-            sink.add(StoreResponse.error(
-                error: writeError, origin: ResponseOrigin.SourceOfTruth));
-          }
-          return Future.value(null);
-        });
       });
     } finally {
       // we are using a finally here instead of onCompletion as there might be a

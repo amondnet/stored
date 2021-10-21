@@ -8,8 +8,10 @@ import '../testutils/test_store_ext.dart';
 void main() {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((event) {
-    print(event.message);
+    print('[${event.loggerName}] - ${event.message}');
   });
+
+  final _logger = Logger('clear_all_store_test');
 
   const key1 = 'key1';
   const key2 = 'key2';
@@ -39,23 +41,24 @@ void main() {
     // should receive data from network first time
     expect(await store.getData(key1),
         StoreResponse.data(origin: ResponseOrigin.Fetcher, value: value1));
-    print('getData 1');
+    _logger.info('getData 1');
 
     expect(await store.getData(key2),
         StoreResponse.data(origin: ResponseOrigin.Fetcher, value: value2));
-    print('getData 2');
+    _logger.info('getData 2');
 
     // should receive data from persister
+    final res = await store.getData(key1);
     expect(
-        await store.getData(key1),
+        res,
         StoreResponse.data(
             origin: ResponseOrigin.SourceOfTruth, value: value1));
-    print('getData 3');
+    _logger.info('getData 3');
 
     expect(
         await store.getData(key2),
         StoreResponse.data(
             origin: ResponseOrigin.SourceOfTruth, value: value2));
-    print('getData 4');
+    _logger.info('getData 4');
   });
 }

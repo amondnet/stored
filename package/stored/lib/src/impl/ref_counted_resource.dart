@@ -27,7 +27,7 @@ class RefCountedResource<Key, T> {
       });
 
   Future<void> release(Key key, T value) => _lock.synchronized(() {
-        _logger.info('release for $key');
+        _logger.finest('release for $key');
 
         final existing = _items[key];
         checkState(existing != null && existing.value == value,
@@ -40,7 +40,7 @@ class RefCountedResource<Key, T> {
           print('removed');
           print('items : ${_items.length}');
         }
-      });
+      }).whenComplete(() => _logger.finest('released for $key'));
 
   @visibleForTesting
   Future<int> get size => _lock.synchronized(() => _items.length);

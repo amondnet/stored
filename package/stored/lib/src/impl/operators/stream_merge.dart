@@ -10,9 +10,14 @@ extension StreamMerge<T> on Stream<T> {
     return StreamGroup.merge([this, other]).transform(
         StreamTransformer<dynamic, Either<T, R>>.fromHandlers(
             handleData: (data, sink) {
+      print('handle data');
       if (data is T) {
+        print('handle left');
+
         sink.add(Either.left<T, R>(data));
       } else if (data is R) {
+        print('handle right');
+
         sink.add(Either.right<T, R>(data));
       }
     }));

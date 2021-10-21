@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:stored/src/impl/real_source_of_truth.dart';
